@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
+#define DOOR_PIN        2
 #define RST_PIN         5          // Configurable, see typical pin layout above
 #define SS_PIN          10         // Configurable, see typical pin layout above
 
@@ -15,6 +16,8 @@ bool rfid = false;
 
 void setup() {
   Serial.begin(115200);
+
+  pinMode(DOOR_PIN, INPUT);
 
   // Lazer 
   // wait until serial port opens for native USB devices
@@ -41,47 +44,41 @@ void setup() {
 
 
 void loop() {
-  // lazer
-  VL53L0X_RangingMeasurementData_t measure;
-    
-  Serial.print("Reading a measurement... ");
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
-  } else {
-    Serial.println(" out of range ");
-  }
-    
-  // delay(100);
-
-  // RFID Reader
-  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-	if ( ! mfrc522.PICC_IsNewCardPresent()) {
-		return;
-	}
-
-	// Select one of the cards
-	if ( ! mfrc522.PICC_ReadCardSerial()) {
-		return;
-	}
-
-	// Dump debug info about the card; PICC_HaltA() is automatically called
-	mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+  readLazer();
+  readRFID();
+  if (digitalRead(DOOR_PIN)) Serial.println("Door closed");
 }
 
 void readLazer() {
   // lazer
   VL53L0X_RangingMeasurementData_t measure;
     
-  Serial.print("Reading a measurement... ");
+  // Serial.print("Reading a measurement... ");
   lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
+    // Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
   } else {
     Serial.println(" out of range ");
   }
     
   // delay(100);
+}
+
+void readRFID() {
+  // RFID Reader
+  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+	if ( ! mfrc522.PICC_IsNewCardPresent()) {
+		return;
+	}
+
+  Serial.println("Present");
+	// Select one of the cards
+	if ( ! mfrc522.PICC_ReadCardSerial()) {
+    
+		return;
+	}
+
+	// Dump debug info about the card; PICC_HaltA() is automatically called
+	// mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
 }
