@@ -1,12 +1,35 @@
+/*
+Project LowKey
+by Josh Huang
+
+This is the controller code for the LowKey lock-out prevention device.
+Its main function is to read inputs from a VL53L0X laser distance reader, door sensor, and MFRC522 RFID reader to determine when
+the user is attempting to leave their residence without their key. Thus preventing locking the user out.
+The output is a micro servo that raises a physical blocker to stop the user from leaving the residence without their key.
+
+This file includes example code from Adafruit_VL53L0X and MFRC522 libraries
+
+Pin map starting line 28
+
+Copyright 2023 Junzhe Huang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include "Adafruit_VL53L0X.h"
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Servo.h>
 
+// pin map (MFRC522 RFID reader requires using I2C pins not listed here)
 #define DOOR_PIN        2
 #define SERVO           3
-#define RST_PIN         5          // Configurable, see typical pin layout above
-#define SS_PIN          10         // Configurable, see typical pin layout above
+#define RST_PIN         5
+#define SS_PIN          10
 
 Servo servo;
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
