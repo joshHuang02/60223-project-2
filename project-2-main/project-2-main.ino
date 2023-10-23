@@ -13,7 +13,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 // limiter values
-int handleDistLimit = 10;
+int handleDistLimit = 130;
 int rfidTimeoutMS = 2000;
 int servoDefault = 150;
 int servoTimeoutMS = 5000;
@@ -70,13 +70,13 @@ void loop() {
   doorOpen = !digitalRead(DOOR_PIN);
   bool servoTimedOut = millis() > servoTime + servoTimeoutMS;
 
-  printStatus();
+  // printStatus();
 
   // control blocker
   if (!doorBlocked) { // blocked down
     if (handleTurned && !doorOpen && !rfid) {
       servoTime = millis();
-      servo.write(servoDefault - 80); // lift blocker
+      servo.write(servoDefault - 65); // lift blocker
       doorBlocked = true;
     }
   } else { //blocker up
@@ -94,7 +94,7 @@ void readLaser() {
   lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    // Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
+    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
     handleTurned = measure.RangeMilliMeter > handleDistLimit;
   }
 }
